@@ -124,4 +124,15 @@ class PayrollApplicationTests {
                 .andExpect(jsonPath("$.role").value("modificado"));
     }
 
+    @Test
+    public void testDeleteEmployee() throws Exception {
+        // se
+
+        // llamada y validación
+        mockMvc.perform(MockMvcRequestBuilders
+                .delete("/employees/1"))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
 }
