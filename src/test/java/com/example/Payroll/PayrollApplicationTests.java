@@ -5,6 +5,7 @@ import com.example.Payroll.entities.Employee;
 import com.example.Payroll.repositories.EmployeeRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -82,6 +83,45 @@ class PayrollApplicationTests {
                 .andExpect(jsonPath("$[0].role").value("programador"))
                 .andExpect(jsonPath("$[1].name").value("Antonio Perez"))
                 .andExpect(jsonPath("$[1].role").value("asistente"));     
+    }
+    
+    @Test
+    public void testGetOneEmployee() throws Exception {
+        // datos de prueba
+        Employee empleado1Response = new Employee(1L, "Felipe Sánchez", "empleado");
+        
+        // mock de la respuesta
+        when(employeeRepository.findById(1L)).thenReturn(Optional.of(empleado1Response));
+        
+        // llamada y validación
+        mockMvc.perform(MockMvcRequestBuilders
+                .get("/employees/1")
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1L))
+                .andExpect(jsonPath("$.name").value("Felipe Sánchez"))
+                .andExpect(jsonPath("$.role").value("empleado"));
+    }
+    
+    @Test
+    public void testModifyEmployee() throws Exception {
+        // datos de prueba
+        Employee empleadoModificado = new Employee (1L, "Felipe modificado", "modificado");
+        
+        // mock respuesta
+        when(employeeRepository.save(any(Employee.class))).thenReturn(empleadoModificado);
+        
+        // llamada y validación
+        mockMvc.perform(MockMvcRequestBuilders
+                .put("/employees/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(empleadoModificado)))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1L))
+                .andExpect(jsonPath("$.name").value("Felipe modificado"))
+                .andExpect(jsonPath("$.role").value("modificado"));
     }
 
 }
