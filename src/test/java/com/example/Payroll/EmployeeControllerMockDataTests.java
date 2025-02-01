@@ -22,7 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(MockitoExtension.class) // hace uso de junit 5
-class PayrollApplicationTests {
+class EmployeeControllerMockDataTests {
 
     private MockMvc mockMvc;
     
