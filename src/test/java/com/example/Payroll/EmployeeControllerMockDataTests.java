@@ -54,7 +54,7 @@ class EmployeeControllerMockDataTests {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(empleado1))) // con objectMapper convertimos el objeto a json
                 //.content("{\"name\": \"Felipe Sánchez\", \"role\": \"empleado\"}"))
-                .andDo(print())
+                //.andDo(print())
                 .andExpect(jsonPath("$.id").value(1L))
                 .andExpect(jsonPath("$.name").value("Felipe Sánchez"))
                 .andExpect(jsonPath("$.role").value("empleado"));
@@ -77,7 +77,7 @@ class EmployeeControllerMockDataTests {
         mockMvc.perform(MockMvcRequestBuilders
                 .get("/employees")
                 .accept(MediaType.APPLICATION_JSON))
-                .andDo(print()) // Esto imprimirá la respuesta JSON en la consola
+                //.andDo(print()) // Esto imprimirá la respuesta JSON en la consola
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].name").value("Felipe Retamar"))
                 .andExpect(jsonPath("$[0].role").value("programador"))
@@ -97,7 +97,7 @@ class EmployeeControllerMockDataTests {
         mockMvc.perform(MockMvcRequestBuilders
                 .get("/employees/1")
                 .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                //.andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1L))
                 .andExpect(jsonPath("$.name").value("Felipe Sánchez"))
@@ -117,8 +117,8 @@ class EmployeeControllerMockDataTests {
                 .put("/employees/1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(empleadoModificado)))
-                .andDo(print())
-                .andExpect(status().isOk())
+                //.andDo(print())
+                .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(1L))
                 .andExpect(jsonPath("$.name").value("Felipe modificado"))
                 .andExpect(jsonPath("$.role").value("modificado"));
@@ -126,13 +126,11 @@ class EmployeeControllerMockDataTests {
 
     @Test
     public void testDeleteEmployee() throws Exception {
-        // se
-
         // llamada y validación
         mockMvc.perform(MockMvcRequestBuilders
                 .delete("/employees/1"))
-                .andDo(print())
-                .andExpect(status().isOk());
+                //.andDo(print())
+                .andExpect(status().isMethodNotAllowed());
     }
 
 }

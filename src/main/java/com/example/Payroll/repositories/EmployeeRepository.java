@@ -19,7 +19,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface EmployeeRepository extends JpaRepository<Employee, Long> {
     
-    // todo corregir que realmente no se pueda llamar a este método y de un error controlado 
     @Override
         @RestResource(exported = false)
         default void deleteById(@NonNull Long id) {
