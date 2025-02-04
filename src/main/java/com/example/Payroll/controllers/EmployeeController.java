@@ -5,6 +5,7 @@
 package com.example.Payroll.controllers;
 
 import com.example.Payroll.entities.Employee;
+import com.example.Payroll.entities.Phone;
 import com.example.Payroll.repositories.EmployeeRepository;
 import java.net.URI;
 import java.util.List;
@@ -13,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -85,6 +87,22 @@ public class EmployeeController {
             })
             .orElse(ResponseEntity.created(ubicacion).body(employeeRepository.save(modifiedEmployee))); 
      }
+    
+    @PostMapping("/employees/{id}/phones")
+    ResponseEntity<Employee> addPhone(@RequestBody Phone newPhone, @PathVariable Long id) {
+        URI ubicacion = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .build()
+                .toUri();
+        
+        return employeeRepository.findById(id)
+                .map(employee -> {
+                    employee.addPhone(newPhone);
+                    Employee updatedEmployee = employeeRepository.save(employee);
+                    return ResponseEntity.ok().location(ubicacion).body(updatedEmployee);
+                })
+                .orElse(ResponseEntity.notFound().build());
+    }
     
     
     @DeleteMapping("/employees/{id}")

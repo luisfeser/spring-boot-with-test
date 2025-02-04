@@ -1,5 +1,6 @@
 package com.example.Payroll;
 
+import com.example.Payroll.entities.Phone;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,9 @@ import org.springframework.http.MediaType;
 import com.example.Payroll.entities.Employee;
 import com.example.Payroll.repositories.EmployeeRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -35,7 +39,7 @@ public class EmployeeControllerTest {
     public void setUp() {
         // limpiamos la base de datos y creamos dos entidades
         employeeRepository.deleteAll();
-        Employee alex = new Employee("alex", "manager");
+        Employee alex = new Employee("alex", "manager", Arrays.asList(new Phone("612612612")));
         Employee felipe = new Employee("felipe", "employee");
         employeeRepository.save(alex);
         employeeRepository.save(felipe);
@@ -76,7 +80,10 @@ public class EmployeeControllerTest {
 
     @Test
     public void testAddEmployee() throws Exception{
-        Employee employee = new Employee("juan", "employee");
+        Phone phone1 = new Phone("666123123");
+        Phone phone2 = new Phone("666124124");
+        Employee employee = new Employee("juan", "employee", Arrays.asList(phone1, phone2));
+
         mockMvc.perform(MockMvcRequestBuilders
                 .post("/employees")
                 .contentType("application/json")
@@ -85,7 +92,34 @@ public class EmployeeControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(header().exists("Location"))
                 .andExpect(jsonPath("$.name").value("juan"))
-                .andExpect(jsonPath("$.role").value("employee"));
+                .andExpect(jsonPath("$.role").value("employee"))
+                .andExpect(jsonPath("$.phones[0].number").value("666123123"))
+                .andExpect(jsonPath("$.phones[1].number").value("666124124"));
+    }
+    
+    @Test
+    public void testAddPhoneToExistingEmployee() throws Exception {
+        Phone newPhone = new Phone("655655655");
+        mockMvc.perform(MockMvcRequestBuilders
+                .post("/employees/" + this.alexId + "/phones")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(newPhone)))
+                //.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(header().exists("Location"))
+                .andExpect(jsonPath("$.name").value("alex"))
+                .andExpect(jsonPath("$.role").value("manager"))
+                .andExpect(jsonPath("$.phones[0].number").value("612612612"))
+                .andExpect(jsonPath("$.phones[1].number").value("655655655"));
+    }
+    
+    @Test
+    public void testPhoneRespositoryDontExist() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders
+            .get("/phones")
+            .accept(MediaType.APPLICATION_JSON))
+            //.andDo(print())
+            .andExpect(status().isNotFound());
     }
 
     @Test
@@ -104,7 +138,7 @@ public class EmployeeControllerTest {
     
     @Test
     public void testUpdateEmployeeThatExists() throws Exception {
-        Employee modifiedEmployee = new Employee(alexId, "alex modificado", "manager modificado");
+        Employee modifiedEmployee = new Employee(alexId, "alex modificado", "manager modificado", Arrays.asList());
         
         mockMvc.perform(MockMvcRequestBuilders
                 .put("/employees/" + alexId)
