@@ -15,7 +15,6 @@ import org.springframework.http.MediaType;
 import com.example.Payroll.entities.Employee;
 import com.example.Payroll.repositories.EmployeeRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -39,7 +38,7 @@ public class EmployeeControllerTest {
     public void setUp() {
         // limpiamos la base de datos y creamos dos entidades
         employeeRepository.deleteAll();
-        Employee alex = new Employee("alex", "manager", Arrays.asList(new Phone("612612612")));
+        Employee alex = new Employee("alex", "manager", List.of(new Phone("612612612")));
         Employee felipe = new Employee("felipe", "employee");
         employeeRepository.save(alex);
         employeeRepository.save(felipe);
@@ -138,7 +137,7 @@ public class EmployeeControllerTest {
     
     @Test
     public void testUpdateEmployeeThatExists() throws Exception {
-        Employee modifiedEmployee = new Employee(alexId, "alex modificado", "manager modificado", Arrays.asList());
+        Employee modifiedEmployee = new Employee(alexId, "alex modificado", "manager modificado", List.of());
         
         mockMvc.perform(MockMvcRequestBuilders
                 .put("/employees/" + alexId)
